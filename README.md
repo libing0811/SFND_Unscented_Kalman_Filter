@@ -3,7 +3,7 @@ Sensor Fusion UKF Highway Project
 
 ## The understanding of whole project
 
-###render.h & render.cpp
+### render.h & render.cpp
 render files are used for visualizing the result with pcl_visualizer library. 
 Including:
 - Highway Scene
@@ -15,13 +15,13 @@ Including:
 - The ground_truth movement process of the cars.
 - Car motion structure: accuation (motion_time, motion_acceleration, motion_steering_angle)
 
-###lidar.h
+### lidar.h
 lidar.h is used for generating lidar cloud points.
 But we don't use lidar.h to generate lidar pcd file in runtime. 
 The pcd files has been generated and store in data/pcd directory. 
 We load the files in data/pcd directory and use them for simulation.  -- see detail in highway.h::void stepHighway() function.
 
-###highway.h
+### highway.h
 highway.h is very important file.
 
 In construct function Highway(pcl::visualization::PCLVisualizer::Ptr& viewer), we define the following things:
@@ -36,7 +36,7 @@ In stepHighway function:
 - then we call tool.h & tool.cpp function to call the UKF predict & measurement process, to get the estimation of this timestamp
 - we compare all four cars' ground_truth value and ukf_estimation value, too compute a whole RSME evaluation result of the UKF method, then visualize it.
 
-###tools.h&tools.cpp
+### tools.h&tools.cpp
 tools files main contain the following functions:
 - lidarSense function: handle (preprocess) lidar measurement input and add noise into it, then call UKF.ProcessMeasurement function
 - radarSense function: handle (preprocess) radar measurement input and add noise into it, then call UKF.ProcessMeasurement function
@@ -48,10 +48,11 @@ tools files main contain the following functions:
 - CalculateRMSE function: calcuate RMSE of all the four cars.
 - savePcd & loadPcd function: the function to save and load pcd files.
 
-###ukf.h&ukf.cpp
+### ukf.h&ukf.cpp
 The main implmentation of UKF method.
 It should implement the CTRV model and UKF method (including a lot of parameter, for example: process noise vector and measurement noise vector, we need to define them).
 It contains following method:
+
         void Prediction(double delta_t);
         void ProcessMeasurement(MeasurementPackage meas_package);
         void UpdateLidar(MeasurementPackage meas_package);
