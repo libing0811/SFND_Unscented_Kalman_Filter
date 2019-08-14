@@ -60,13 +60,29 @@ It contains following method:
         
 In order to make implement the function, i make a little change and add new functions as follow:
 
+        /*the prediction method. Used in two cases: one case is UKF predict process; another case is to predict the futher path.
+        For futher path predict, the s!=NULL, this method won't change member x_, it will return the result to s and P.*/
         void Prediction(double delta_t, Eigen::VectorXd *s=NULL, Eigen::MatrixXd *P=NULL);
+        
+        /*the update function of lidar measurement. It will use normal KF formula to update the x_ and P_ */
         void UpdateLidar(MeasurementPackage meas_package);
+        
+        /*the update function of radar measurement. It will use UKF method to update the x_ and P_ */
         void UpdateRadar(MeasurementPackage meas_package);
+        
+        /*Prediction Process: generate sigma points with noise augment, according to the current state and covariance */
         void GenerateSigmaPointsWithAugment(Eigen::MatrixXd* Xsig_out);
+        
+        /*Prediction Process: transform the orginal sigma points to the predict sigma points. Use the f(x,mu) function. f(x,mu) is defined by CTRV model*/
         void SigmaPointPredictionWithAugment(const Eigen::MatrixXd & Xsig_aug, double dt, Eigen::MatrixXd* Xsig_predict_out);
+        
+        /*Prediction Process: use the predicted sigma points to compute the predicted state mean and covariance.*/
         void PredictMeanAndCovarianceWithSigmaPoints(const Eigen::MatrixXd & Xsig_predict, Eigen::VectorXd *s=NULL, Eigen::MatrixXd *P=NULL);
+        
+        /*Radar Update Process: use the predicted sigma points to compute the measurement predict sigma points. Use the h(x) function. h(x) is defined by Radar itself*/
         void PredictRadarMeasurementWithSigmaPoints(const Eigen::MatrixXd & Xsig_predict, Eigen::VectorXd* z_out, Eigen::MatrixXd* S_out, Eigen::MatrixXd* Z_sigma_points_out);
+        
+        /*Radar Update Process: use measurement predict sigma points and the real radar measurement to update the state mean x_ and covariance P_*/
         void UpdateStateWithRadar(const Eigen::VectorXd & z_pred, const Eigen::MatrixXd & S, const Eigen::MatrixXd & Z_sigma_points, const Eigen::MatrixXd & Xsig_pred, const Eigen::VectorXd & z_measurement, double * nis_radar);
         
 ### Parameter choose
