@@ -20,14 +20,14 @@ public:
 	// Parameters 
 	// --------------------------------
 	// Set which cars to track with UKF
-	std::vector<bool> trackCars = {true,true,true};
-	// Visualize sensor measurements
+	std::vector<bool> trackCars    = {true,true,true};
+	// V lize sensor measurements
 	bool visualize_lidar = true;
 	bool visualize_radar = true;
 	bool visualize_pcd = false;
 	// Predict path in the future using UKF
-	double projectedTime = 0;
-	int projectedSteps = 0;
+	double projectedTime = 2;
+	int projectedSteps = 6;
 	// --------------------------------
 
 	Highway(pcl::visualization::PCLVisualizer::Ptr& viewer)
@@ -188,5 +188,29 @@ public:
 		}
 		
 	}
+    
+   
+  	void PrintNisData()
+    {
+    	string log_file="./nis_result.txt"; //result logging file
+    	ofstream log;
+    	log.open(log_file);
+  		for (int i = 0; i < traffic.size(); i++)
+		{
+            log<<traffic[i].name<<" lidar nis:"<<endl;
+			for (int j=0 ; j < traffic[i].ukf.lidar_nis_list->size(); j++){
+               log<<traffic[i].ukf.lidar_nis_list->at(j)<<"\t";
+            }
+            log<<endl;
+
+             log<<traffic[i].name<<" radar nis:"<<endl;
+			for (int j=0 ; j < traffic[i].ukf.radar_nis_list->size(); j++){
+               log<<traffic[i].ukf.radar_nis_list->at(j)<<"\t";
+            }
+            log<<endl;
+        }
+        log.close();
+    
+    }
 	
 };
