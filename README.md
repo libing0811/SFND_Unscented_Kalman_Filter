@@ -1,76 +1,58 @@
 # SFND_Unscented_Kalman_Filter
-Sensor Fusion UKF Highway Project Starter Code
+Sensor Fusion UKF Highway Project 
 
-<img src="media/ukf_highway_tracked.gif" width="700" height="400" />
+## The understanding of whole project
 
-In this project you will implement an Unscented Kalman Filter to estimate the state of multiple cars on a highway using noisy lidar and radar measurements. Passing the project requires obtaining RMSE values that are lower that the tolerance outlined in the project rubric. 
+###render.h & render.cpp
+render files are used for visualizing the result with pcl_visualizer library. 
+Including:
+- Highway Scene
+- Radar Ray & object position
+- Lidar Cloud Points & object position
+- Car structure definition.
+- Cars object and position.
+- Cars prediction furture position of UKF
+- The ground_truth movement process of the cars.
+- Car motion structure: accuation (motion_time, motion_acceleration, motion_steering_angle)
 
-The main program can be built and ran by doing the following from the project top directory.
+###lidar.h
+lidar.h is used for generating lidar cloud points.
+But we don't use lidar.h to generate lidar pcd file in runtime. 
+The pcd files has been generated and store in data/pcd directory. 
+We load the files in data/pcd directory and use them for simulation.  -- see detail in highway.h::void stepHighway() function.
 
-1. mkdir build
-2. cd build
-3. cmake ..
-4. make
-5. ./ukf_highway
+###highway.h
+highway.h is very important file.
 
-Note that the programs that need to be written to accomplish the project are src/ukf.cpp, and src/ukf.h
+In construct function Highway(pcl::visualization::PCLVisualizer::Ptr& viewer), we define the following things:
+- ego car and three cars initial state (position,size,velocity, angle, )
+- ego car and three cars further motion, including (motion_time,motion_acceleration,motion_steering_angle). Note: the motions is ground_truth value for simulation.
 
-The program main.cpp has already been filled out, but feel free to modify it.
+In stepHighway function:
+- first, we call render functions defined in render.cpp to render the highway environment.
+- then, for each car, we call their move function, to simulate their movement according to the timestamp.
+        traffic[i].move((double)1/frame_per_sec, timestamp);
+- after that, we get the ground_truth value of this timestamp
+- then we call tool.h & tool.cpp function to call the UKF predict & measurement process, to get the estimation of this timestamp
+- we compare all four cars' ground_truth value and ukf_estimation value, too compute a whole RSME evaluation result of the UKF method, then visualize it.
 
-<img src="media/ukf_highway.png" width="700" height="400" />
+###tools.h&tools.cpp
+tools files main contain the following functions:
+- lidarSense function: handle (preprocess) lidar measurement input and add noise into it, then call UKF.ProcessMeasurement function
+- radarSense function: handle (preprocess) radar measurement input and add noise into it, then call UKF.ProcessMeasurement function
+- ukfResults function: 
+    Call UKF.predict function to get further a few step of the car's state.
+    Show UKF tracking and also predict future path
+        Parameter: double time:: time ahead in the future to predict
+        Parameter: int steps:: how many steps to show between present and time and future time
+- CalculateRMSE function: calcuate RMSE of all the four cars.
+- savePcd & loadPcd function: the function to save and load pcd files.
 
-`main.cpp` is using `highway.h` to create a straight 3 lane highway environment with 3 traffic cars and the main ego car at the center. 
-The viewer scene is centered around the ego car and the coordinate system is relative to the ego car as well. The ego car is green while the 
-other traffic cars are blue. The traffic cars will be accelerating and altering their steering to change lanes. Each of the traffic car's has
-it's own UKF object generated for it, and will update each indidual one during every time step. 
-
-The red spheres above cars represent the (x,y) lidar detection and the purple lines show the radar measurements with the velocity magnitude along the detected angle. The Z axis is not taken into account for tracking, so you are only tracking along the X/Y axis.
-
----
-
-## Other Important Dependencies
-* cmake >= 3.5
-  * All OSes: [click here for installation instructions](https://cmake.org/install/)
-* make >= 4.1 (Linux, Mac), 3.81 (Windows)
-  * Linux: make is installed by default on most Linux distros
-  * Mac: [install Xcode command line tools to get make](https://developer.apple.com/xcode/features/)
-  * Windows: [Click here for installation instructions](http://gnuwin32.sourceforge.net/packages/make.htm)
-* gcc/g++ >= 5.4
-  * Linux: gcc / g++ is installed by default on most Linux distros
-  * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
-  * Windows: recommend using [MinGW](http://www.mingw.org/)
- * PCL 1.2
-
-## Basic Build Instructions
-
-1. Clone this repo.
-2. Make a build directory: `mkdir build && cd build`
-3. Compile: `cmake .. && make`
-4. Run it: `./ukf_highway`
-
-## Editor Settings
-
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
-
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
-
-## Code Style
-
-Please stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html) as much as possible.
-
-## Generating Additional Data
-
-This is optional!
-
-If you'd like to generate your own radar and lidar modify the code in `highway.h` to alter the cars. Also check out `tools.cpp` to
-change how measurements are taken, for instance lidar markers could be the (x,y) center of bounding boxes by scanning the PCD environment
-and performing clustering. This is similar to what was done in Sensor Fusion Lidar Obstacle Detection.
-
-## Project Instructions and Rubric
-
-This information is only accessible by people who are already enrolled in Sensor Fusion. 
-If you are enrolled, see the project page in the classroom
-for instructions and the project rubric.
+###ukf.h&ukf.cpp
+The main implmentation of UKF method.
+It should implement the CTRV model and UKF method (including a lot of parameter, for example: process noise vector and measurement noise vector, we need to define them).
+It contains following method:
+        void Prediction(double delta_t);
+        void ProcessMeasurement(MeasurementPackage meas_package);
+        void UpdateLidar(MeasurementPackage meas_package);
+        void UpdateRadar(MeasurementPackage meas_package);
