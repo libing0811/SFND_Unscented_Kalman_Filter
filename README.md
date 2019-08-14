@@ -34,7 +34,7 @@ In stepHighway function:
         traffic[i].move((double)1/frame_per_sec, timestamp);
 - after that, we get the ground_truth value of this timestamp
 - then we call tool.h & tool.cpp function to call the UKF predict & measurement process, to get the estimation of this timestamp
-- we compare all four cars' ground_truth value and ukf_estimation value, too compute a whole RSME evaluation result of the UKF method, then visualize it.
+- we compare all traffic cars' ground_truth value and ukf_estimation value, too compute a whole RSME evaluation result of the UKF method, then visualize it.
 
 ### tools.h&tools.cpp
 tools files main contain the following functions:
@@ -45,7 +45,7 @@ tools files main contain the following functions:
     Show UKF tracking and also predict future path
         Parameter: double time:: time ahead in the future to predict
         Parameter: int steps:: how many steps to show between present and time and future time
-- CalculateRMSE function: calcuate RMSE of all the four cars.
+- CalculateRMSE function: calcuate RMSE of all the traffic cars.
 - savePcd & loadPcd function: the function to save and load pcd files.
 
 ### ukf.h&ukf.cpp
@@ -57,3 +57,18 @@ It contains following method:
         void ProcessMeasurement(MeasurementPackage meas_package);
         void UpdateLidar(MeasurementPackage meas_package);
         void UpdateRadar(MeasurementPackage meas_package);
+        
+In order to make implement the function, i make a little change and add new functions as follow:
+
+        void Prediction(double delta_t, Eigen::VectorXd *s=NULL, Eigen::MatrixXd *P=NULL);
+        void UpdateLidar(MeasurementPackage meas_package);
+        void UpdateRadar(MeasurementPackage meas_package);
+        void GenerateSigmaPointsWithAugment(Eigen::MatrixXd* Xsig_out);
+        void SigmaPointPredictionWithAugment(const Eigen::MatrixXd & Xsig_aug, double dt, Eigen::MatrixXd* Xsig_predict_out);
+        void PredictMeanAndCovarianceWithSigmaPoints(const Eigen::MatrixXd & Xsig_predict, Eigen::VectorXd *s=NULL, Eigen::MatrixXd *P=NULL);
+        void PredictRadarMeasurementWithSigmaPoints(const Eigen::MatrixXd & Xsig_predict, Eigen::VectorXd* z_out, Eigen::MatrixXd* S_out, Eigen::MatrixXd* Z_sigma_points_out);
+        void UpdateStateWithRadar(const Eigen::VectorXd & z_pred, const Eigen::MatrixXd & S, const Eigen::MatrixXd & Z_sigma_points, const Eigen::MatrixXd & Xsig_pred, const Eigen::VectorXd & z_measurement, double * nis_radar);
+        
+### NIS computation and Parameter choose
+In order to make the choice about the process parameter of std_a_ and sta_yawdd, i record all cars lidar and radar nis value in nis_result.txt file. 
+Then i choose the parameter std_a_=3.5 and std_yawdd_.
