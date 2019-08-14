@@ -91,6 +91,7 @@ Then i choose the parameter std_a_=3.5 and std_yawdd_=M_PI/3.
 
 ### NIS compute result
 Here i list the nis result of lidar and radar nis result pictures.
+You can find them in nis_result.xlsx and nis_result.txt.
 ![car1_lidar_nis](https://github.com/libing0811/SFND_Unscented_Kalman_Filter/blob/master/media/car1_lidar_nis.PNG)
 ![car1_radar_nis](https://github.com/libing0811/SFND_Unscented_Kalman_Filter/blob/master/media/car1_radar_nis.PNG)
 ![car2_lidar_nis](https://github.com/libing0811/SFND_Unscented_Kalman_Filter/blob/master/media/car2_lidar_nis.PNG)
