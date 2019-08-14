@@ -27,7 +27,7 @@ class UKF {
    * matrix
    * @param delta_t Time between k and k+1 in s
    */
-  void Prediction(double delta_t);
+  void Prediction(double delta_t, Eigen::VectorXd *s=NULL, Eigen::MatrixXd *P=NULL);
 
   /**
    * Updates the state and the state covariance matrix using a laser measurement
@@ -41,6 +41,21 @@ class UKF {
    */
   void UpdateRadar(MeasurementPackage meas_package);
 
+
+  //Generate Sigma Points with augment noise vector
+  void GenerateSigmaPointsWithAugment(Eigen::MatrixXd* Xsig_out);
+
+  //Predict Sigma Points with augument noise vector
+  void SigmaPointPredictionWithAugment(const Eigen::MatrixXd & Xsig_aug, double dt, Eigen::MatrixXd* Xsig_predict_out);
+
+  //Compute predict state x mean and covariance.
+  void PredictMeanAndCovarianceWithSigmaPoints(const Eigen::MatrixXd & Xsig_predict, Eigen::VectorXd *s=NULL, Eigen::MatrixXd *P=NULL);
+
+  //Predict Radar Measurement
+  void PredictRadarMeasurementWithSigmaPoints(const Eigen::MatrixXd & Xsig_predict, Eigen::VectorXd* z_out, Eigen::MatrixXd* S_out, Eigen::MatrixXd* Z_sigma_points_out);
+
+  //Update state with measurement
+  void UpdateStateWithRadar(const Eigen::VectorXd & z_pred, const Eigen::MatrixXd & S, const Eigen::MatrixXd & Z_sigma_points, const Eigen::MatrixXd & Xsig_pred, const Eigen::VectorXd & z_measurement, double * nis_radar);
 
   // initially set to false, set to true in first call of ProcessMeasurement
   bool is_initialized_;
@@ -62,6 +77,9 @@ class UKF {
 
   // time when the state is true, in us
   long long time_us_;
+
+  //
+  long long previous_timestamp_;
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
   double std_a_;
@@ -95,6 +113,10 @@ class UKF {
 
   // Sigma point spreading parameter
   double lambda_;
+  
+  std::vector<double> *lidar_nis_list;
+  
+  std::vector<double> *radar_nis_list;
 };
 
 #endif  // UKF_H
