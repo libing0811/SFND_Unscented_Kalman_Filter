@@ -69,6 +69,15 @@ In order to make implement the function, i make a little change and add new func
         void PredictRadarMeasurementWithSigmaPoints(const Eigen::MatrixXd & Xsig_predict, Eigen::VectorXd* z_out, Eigen::MatrixXd* S_out, Eigen::MatrixXd* Z_sigma_points_out);
         void UpdateStateWithRadar(const Eigen::VectorXd & z_pred, const Eigen::MatrixXd & S, const Eigen::MatrixXd & Z_sigma_points, const Eigen::MatrixXd & Xsig_pred, const Eigen::VectorXd & z_measurement, double * nis_radar);
         
-### NIS computation and Parameter choose
+### Parameter choose
 In order to make the choice about the process parameter of std_a_ and sta_yawdd, i record all cars lidar and radar nis value in nis_result.txt file. 
-Then i choose the parameter std_a_=3.5 and std_yawdd_.
+Then i choose the parameter std_a_=3.5 and std_yawdd_=M_PI/3.
+
+### NIS compute result
+Here i list the nis result of lidar and radar nis result pictures.
+![car1_lidar_nis](https://github.com/libing0811/SFND_Unscented_Kalman_Filter/blob/master/media/car1_lidar_nis.PNG)
+![car1_radar_nis](https://github.com/libing0811/SFND_Unscented_Kalman_Filter/blob/master/media/car1_radar_nis.PNG)
+![car2_lidar_nis](https://github.com/libing0811/SFND_Unscented_Kalman_Filter/blob/master/media/car2_lidar_nis.PNG)
+![car2_radar_nis](https://github.com/libing0811/SFND_Unscented_Kalman_Filter/blob/master/media/car2_radar_nis.PNG)
+![car3_lidar_nis](https://github.com/libing0811/SFND_Unscented_Kalman_Filter/blob/master/media/car3_lidar_nis.PNG)
+![car3_radar_nis](https://github.com/libing0811/SFND_Unscented_Kalman_Filter/blob/master/media/car3_radar_nis.PNG)
