@@ -117,6 +117,11 @@ class UKF {
   std::vector<double> *lidar_nis_list;
   
   std::vector<double> *radar_nis_list;
+
+  bool kalman_gain_factor_radar_use;
+  bool kalman_gain_factor_lidar_use;
+  Eigen::VectorXd kalman_gain_factor_lidar;
+  Eigen::VectorXd kalman_gain_factor_radar;
 };
 
 #endif  // UKF_H
