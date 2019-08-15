@@ -82,9 +82,18 @@ UKF::UKF() {
     weights_(i) = weight;
   }
   
-  //
+  //the vector to restore nis result.
   lidar_nis_list = new std::vector<double>();
   radar_nis_list = new std::vector<double>();
+
+  //kalman gain factor to show the belief of the sensor;
+  kalman_gain_factor_radar_use=true;
+  kalman_gain_factor_lidar_use=true;
+  
+  kalman_gain_factor_lidar= VectorXd(n_x_);
+  kalman_gain_factor_radar= VectorXd(n_x_);
+  kalman_gain_factor_lidar << 1.1, 1.1,  1,   1,  1;
+  kalman_gain_factor_radar << 1,   1,    1.1, 1,  1;
 }
 
 UKF::~UKF() {}
@@ -194,9 +203,14 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   MatrixXd Si = S.inverse();
   MatrixXd PHt = P_ * Ht;
   MatrixXd K = PHt * Si;
+  
 
   //new estimate
-  x_ = x_ + (K * y);
+  VectorXd _gain=(K * y);
+  if(kalman_gain_factor_lidar_use)
+    _gain= _gain.cwiseProduct(kalman_gain_factor_lidar);
+  
+  x_ = x_ + _gain;
   long x_size = x_.size();
   MatrixXd I = MatrixXd::Identity(x_size, x_size);
   P_ = (I - K * H_) * P_;
@@ -467,6 +481,11 @@ void UKF::UpdateStateWithRadar(const Eigen::VectorXd & z_pred, const Eigen::Matr
   MatrixXd S_inverse = S.inverse();
   MatrixXd K = Tc * S_inverse;
 
+  //for(int i=0; i<K.rows(); i++)
+  //{
+  //  K.row(i) = K.row(i) * kalman_gain_factor_radar(i);
+ // }
+
   // update state mean and covariance matrix
   // residual
   VectorXd z_diff = z_measurement - z_pred;
@@ -475,7 +494,11 @@ void UKF::UpdateStateWithRadar(const Eigen::VectorXd & z_pred, const Eigen::Matr
   while (z_diff(1)> M_PI) z_diff(1)-=2.*M_PI;
   while (z_diff(1)<-M_PI) z_diff(1)+=2.*M_PI;
 
-  x_ = x_ + K*(z_diff);
+  VectorXd _gain=(K * z_diff);
+  if(kalman_gain_factor_radar_use)
+    _gain= _gain.cwiseProduct(kalman_gain_factor_radar);
+
+  x_ = x_ + _gain;
   P_ = P_ - K*S*K.transpose();
 
   //compute NIS
