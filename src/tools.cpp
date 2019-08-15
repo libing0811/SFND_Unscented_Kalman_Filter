@@ -26,12 +26,12 @@ lmarker Tools::lidarSense(Car& car, pcl::visualization::PCLVisualizer::Ptr& view
 	if(visualize)
 		viewer->addSphere(pcl::PointXYZ(marker.x,marker.y,3.0),0.5, 1, 0, 0,car.name+"_lmarker");
 
-    meas_package.raw_measurements_ << marker.x, marker.y;
-    meas_package.timestamp_ = timestamp;
+	meas_package.raw_measurements_ << marker.x, marker.y;
+	meas_package.timestamp_ = timestamp;
 
-    car.ukf.ProcessMeasurement(meas_package);
+	car.ukf.ProcessMeasurement(meas_package);
 
-    return marker;
+	return marker;
 }
 
 // sense where a car is located using radar measurement
