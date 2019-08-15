@@ -96,8 +96,8 @@ I have try to use to vector to modify the Kalman_Gain added to the state x_
 
         Eigen::VectorXd kalman_gain_factor_lidar = VectorXd(n_x_);
         Eigen::VectorXd kalman_gain_factor_radar = VectorXd(n_x_);
-        kalman_gain_factor_lidar << 1.2, 1.2,  1,   1,  1;  //i think lidar has more accuray in px,py belief
-        kalman_gain_factor_radar << 1,   1,    1.2, 1,  1;  //i think radar has more accuray in v belief
+        kalman_gain_factor_lidar << 1.1, 1.1,  1,   1,  1;  //i think lidar has more accuray in px,py belief
+        kalman_gain_factor_radar << 1,   1,    1.1, 1,  1;  //i think radar has more accuray in v belief
         
         //lidar measurement udpate
         VectorXd _gain=(K * y);
@@ -111,7 +111,7 @@ I have try to use to vector to modify the Kalman_Gain added to the state x_
           _gain= _gain.cwiseProduct(kalman_gain_factor_radar);
         x_ = x_ + _gain;
 
-But the result seems not like what i want. I don't know why now.
+But the result seems not like what i want. The performance seems no change. I don't know why now. Maybe this method i apply is misuse...
 
 ### NIS compute result
 Here i list the nis result of lidar and radar nis result pictures. (use parameter std_a_=3.5 and std_yawdd_=M_PI/3).
