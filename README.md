@@ -89,8 +89,32 @@ In order to make implement the function, i make a little change and add new func
 In order to make the choice about the process parameter of std_a_ and sta_yawdd, i record all cars lidar and radar nis value in nis_result.txt file. 
 Then i choose the parameter std_a_=3.5 and std_yawdd_=M_PI/3.
 
+### Lidar measurement weight and Radar measurement weight
+In udacity project, there is a well design UKF sensor fusion framework. It use lidar and radar measurement to fusion, then tracking the object.
+But I am wondering lidar and radar must have different belief in different situation(range & weather). But in this project, udacity don't give the method of apply the different belief (or weight) of the measurement.
+I have try to use to vector to modify the Kalman_Gain added to the state x_
+
+        Eigen::VectorXd kalman_gain_factor_lidar = VectorXd(n_x_);
+        Eigen::VectorXd kalman_gain_factor_radar = VectorXd(n_x_);
+        kalman_gain_factor_lidar << 1.2, 1.2,  1,   1,  1;  //i think lidar has more accuray in px,py belief
+        kalman_gain_factor_radar << 1,   1,    1.2, 1,  1;  //i think radar has more accuray in v belief
+        
+        //lidar measurement udpate
+        VectorXd _gain=(K * y);
+        if(kalman_gain_factor_lidar_use)
+          _gain= _gain.cwiseProduct(kalman_gain_factor_lidar);
+        x_ = x_ + _gain;
+        
+        //radar measurement update
+        VectorXd _gain=(K * z_diff);
+        if(kalman_gain_factor_radar_use)
+          _gain= _gain.cwiseProduct(kalman_gain_factor_radar);
+        x_ = x_ + _gain;
+
+But the result seems not like what i want. I don't know why now.
+
 ### NIS compute result
-Here i list the nis result of lidar and radar nis result pictures.
+Here i list the nis result of lidar and radar nis result pictures. (use parameter std_a_=3.5 and std_yawdd_=M_PI/3).
 You can find them in nis_result.xlsx and nis_result.txt.
 ![car1_lidar_nis](https://github.com/libing0811/SFND_Unscented_Kalman_Filter/blob/master/media/car1_lidar_nis.PNG)
 ![car1_radar_nis](https://github.com/libing0811/SFND_Unscented_Kalman_Filter/blob/master/media/car1_radar_nis.PNG)
